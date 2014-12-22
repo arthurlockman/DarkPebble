@@ -9,6 +9,13 @@ static TextLayer *s_temp_layer;
 static BitmapLayer *s_weather_image;
 static GBitmap *s_weather_clearday;
 static GBitmap *s_weather_clearnight;
+static GBitmap *s_weather_cloudy;
+static GBitmap *s_weather_fog;
+static GBitmap *s_weather_pcloudyday;
+static GBitmap *s_weather_pcloudynight;
+static GBitmap *s_weather_rain;
+static GBitmap *s_weather_snow;
+static GBitmap *s_weather_wind;
 
 //App sync variables
 static AppSync s_sync;
@@ -85,6 +92,13 @@ static void main_window_load(Window *window) {
 	//Initialize Weather Images
 	s_weather_clearday = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_CLEARDAY);
 	s_weather_clearnight = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_CLEARNIGHT);
+	s_weather_fog = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_FOG);
+	s_weather_pcloudyday = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_PCLOUDYDAY);
+	s_weather_pcloudynight = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_PCLOUDYNIGHT);
+	s_weather_rain = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_RAIN);
+	s_weather_snow = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_SNOW);
+	s_weather_wind = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_WIND);
+	s_weather_cloudy = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_CLOUDY);
 	
 	//Initialize Weather Image Display
 	s_weather_image = bitmap_layer_create(GRect(0, 120, 144, 35));

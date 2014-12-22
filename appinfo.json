@@ -13,6 +13,46 @@
     "resources": {
         "media": [
             {
+                "file": "images/wind.png",
+                "name": "IMAGE_WIND",
+                "type": "png"
+            },
+            {
+                "file": "images/snow.png",
+                "name": "IMAGE_SNOW",
+                "type": "png"
+            },
+            {
+                "file": "images/sleet.png",
+                "name": "IMAGE_SLEET",
+                "type": "png"
+            },
+            {
+                "file": "images/rain.png",
+                "name": "IMAGE_RAIN",
+                "type": "png"
+            },
+            {
+                "file": "images/partlycloudynight.png",
+                "name": "IMAGE_PCLOUDYNIGHT",
+                "type": "png"
+            },
+            {
+                "file": "images/partlycloudyday.png",
+                "name": "IMAGE_PCLOUDYDAY",
+                "type": "png"
+            },
+            {
+                "file": "images/fog.png",
+                "name": "IMAGE_FOG",
+                "type": "png"
+            },
+            {
+                "file": "images/cloudy.png",
+                "name": "IMAGE_CLOUDY",
+                "type": "png"
+            },
+            {
                 "file": "images/clearnight.png",
                 "name": "IMAGE_CLEARNIGHT",
                 "type": "png"
