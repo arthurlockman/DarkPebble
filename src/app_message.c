@@ -16,6 +16,7 @@ static GBitmap *s_weather_pcloudynight;
 static GBitmap *s_weather_rain;
 static GBitmap *s_weather_snow;
 static GBitmap *s_weather_wind;
+static GBitmap *s_weather_sleet;
 
 //App sync variables
 static AppSync s_sync;
@@ -27,9 +28,23 @@ enum {
 	ICON_KEY = 2
 };
 
+enum {
+	WEATHER_CLEARDAY = 1,
+	WEATHER_CLEARNIGHT = 2,
+	WEATHER_CLOUDY = 3,
+	WEATHER_FOG = 4,
+	WEATHER_PCLOUDYDAY = 5,
+	WEATHER_PCLOUDYNIGHT = 6,
+	WEATHER_RAIN = 7,
+	WEATHER_SLEET = 8,
+	WEATHER_SNOW = 9,
+	WEATHER_WIND = 10
+};
+
 static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, const Tuple *old_tuple, void *context) {
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "Key: %d", (int)key);
 	switch (key) {
-	case STATUS_KEY:
+	case ICON_KEY:
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "Counter (%d): %d", (int)key, (int)new_tuple->value->int32);
 		break;
 	case TEMP_KEY:
@@ -37,9 +52,43 @@ static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, con
 		static char buffer[] = "100°";
 		snprintf (buffer, sizeof(buffer), "%d°", (int)new_tuple->value->int32);
 		text_layer_set_text(s_temp_layer, buffer);
-		
-		if ((int)new_tuple->value->int32 > 10) {
+		break;
+	case STATUS_KEY:
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Icon: %d", (int)new_tuple->value->int32);
+		switch ((int)new_tuple->value->int32) {
+		case 1:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_clearday);
+			break;
+		case 2:
 			bitmap_layer_set_bitmap(s_weather_image, s_weather_clearnight);
+			break;
+		case 3:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_cloudy);
+			break;
+		case 4:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_fog);
+			break;
+		case 5:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_pcloudyday);
+			break;
+		case 6:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_pcloudynight);
+			break;
+		case 7:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_rain);
+			break;
+		case 8:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_sleet);
+			break;
+		case 9:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_snow);
+			break;
+		case 10:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_wind);
+			break;
+		default:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_clearday);
+			break;
 		}
 		break;
 	}
@@ -99,6 +148,7 @@ static void main_window_load(Window *window) {
 	s_weather_snow = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_SNOW);
 	s_weather_wind = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_WIND);
 	s_weather_cloudy = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_CLOUDY);
+	s_weather_sleet = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_SLEET);
 	
 	//Initialize Weather Image Display
 	s_weather_image = bitmap_layer_create(GRect(0, 120, 144, 35));
@@ -128,7 +178,7 @@ void init(void) {
 	Tuplet initial_values[] = {
 		TupletInteger(STATUS_KEY, 0),
 		TupletInteger(TEMP_KEY, 0),
-		TupletInteger(ICON_KEY, 0),
+		TupletInteger(ICON_KEY, 1),
 	};
 
 	// Begin using AppSync

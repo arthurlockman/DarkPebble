@@ -1,8 +1,8 @@
 {
     "appKeys": {
-        "icon": 2,
         "status": 0,
-        "temp": 1
+        "temp": 1,
+        "weathericon": 2
     },
     "capabilities": [
         "location"
