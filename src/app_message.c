@@ -4,6 +4,7 @@ static Window *window;
 static TextLayer *s_time_layer;
 static TextLayer *s_date_layer;
 static TextLayer *s_temp_layer;
+static TextLayer *s_forecast_layer;
 
 //Images
 static BitmapLayer *s_weather_image;
@@ -20,7 +21,7 @@ static GBitmap *s_weather_sleet;
 
 //App sync variables
 static AppSync s_sync;
-static uint8_t s_sync_buffer[64];
+static uint8_t s_sync_buffer[100];
 
 enum {
 	ICON_KEY = 0,
@@ -46,6 +47,7 @@ static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, con
 	switch (key) {
 	case FORECAST_KEY:
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "Forecast: %s", new_tuple->value->cstring);
+		text_layer_set_text(s_forecast_layer, new_tuple->value->cstring);
 		break;
 	case TEMP_KEY:
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "Temp: %d", (int)new_tuple->value->int32);
@@ -137,6 +139,13 @@ static void main_window_load(Window *window) {
 	text_layer_set_text_alignment(s_temp_layer, GTextAlignmentCenter);
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_temp_layer));
 	
+	s_forecast_layer = text_layer_create(GRect(55, 120, 78, 60));
+	text_layer_set_background_color(s_forecast_layer, GColorClear);
+	text_layer_set_text_color(s_forecast_layer, GColorWhite);
+	text_layer_set_font(s_forecast_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+	text_layer_set_text_alignment(s_forecast_layer, GTextAlignmentLeft);
+	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_forecast_layer));
+	
 	//Initialize Weather Images
 	s_weather_clearday = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_CLEARDAY);
 	s_weather_clearnight = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_CLEARNIGHT);
@@ -150,7 +159,7 @@ static void main_window_load(Window *window) {
 	s_weather_sleet = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_SLEET);
 	
 	//Initialize Weather Image Display
-	s_weather_image = bitmap_layer_create(GRect(0, 120, 144, 35));
+	s_weather_image = bitmap_layer_create(GRect(7, 120, 48, 40));
 	bitmap_layer_set_bitmap(s_weather_image, s_weather_clearday);
 	layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_weather_image));
 	
