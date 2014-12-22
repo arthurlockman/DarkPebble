@@ -127,9 +127,18 @@ function getCurrentWeather(latitude, longitude)
 			console.log("<p>"+temp+"</p>");
 			console.log("<p>"+fTemp+"</p>");
 			console.log("<p>"+summ+"</p>");
-			var dict = {"icon": icon, "temp": fTemp, "forecast": summ};
+			var dict = {"icon": icon, "temp": getSetTemp(fTemp), "forecast": summ};
 			Pebble.sendAppMessage(dict);
 		}
 	};
 	request.send();
+}
+
+function getSetTemp(temperature)
+{
+	if (localStorage.getItem("units") == "F") {
+		return temperature;
+	} else {
+		return ((temperature - 32) * (5/9)) | 0;
+	}
 }
