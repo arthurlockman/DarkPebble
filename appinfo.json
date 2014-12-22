@@ -1,5 +1,6 @@
 {
     "appKeys": {
+        "icon": 2,
         "status": 0,
         "temp": 1
     },
@@ -11,6 +12,11 @@
     "projectType": "native",
     "resources": {
         "media": [
+            {
+                "file": "images/clearnight.png",
+                "name": "IMAGE_CLEARNIGHT",
+                "type": "png"
+            },
             {
                 "file": "images/clearday.png",
                 "name": "IMAGE_CLEARDAY",

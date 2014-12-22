@@ -3,10 +3,12 @@
 static Window *window;	
 static TextLayer *s_time_layer;
 static TextLayer *s_date_layer;
+static TextLayer *s_temp_layer;
 
 //Images
 static BitmapLayer *s_weather_image;
 static GBitmap *s_weather_clearday;
+static GBitmap *s_weather_clearnight;
 
 //App sync variables
 static AppSync s_sync;
@@ -14,7 +16,8 @@ static uint8_t s_sync_buffer[32];
 
 enum {
 	STATUS_KEY = 0,	
-	TEMP_KEY = 1
+	TEMP_KEY = 1,
+	ICON_KEY = 2
 };
 
 static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, const Tuple *old_tuple, void *context) {
@@ -24,6 +27,13 @@ static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, con
 		break;
 	case TEMP_KEY:
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "Temp %d", (int)new_tuple->value->int32);
+		static char buffer[] = "100°";
+		snprintf (buffer, sizeof(buffer), "%d°", (int)new_tuple->value->int32);
+		text_layer_set_text(s_temp_layer, buffer);
+		
+		if ((int)new_tuple->value->int32 > 10) {
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_clearnight);
+		}
 		break;
 	}
 }
@@ -50,10 +60,10 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 static void main_window_load(Window *window) {
+	//144x168
 	s_time_layer = text_layer_create(GRect(0, 5, 144, 50));
 	text_layer_set_background_color(s_time_layer, GColorClear);
 	text_layer_set_text_color(s_time_layer, GColorWhite);
-	
 	text_layer_set_font(s_time_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
 	text_layer_set_text_alignment(s_time_layer, GTextAlignmentCenter);
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_time_layer));
@@ -61,18 +71,25 @@ static void main_window_load(Window *window) {
 	s_date_layer = text_layer_create(GRect(0, 50, 144, 30));
 	text_layer_set_background_color(s_date_layer, GColorClear);
 	text_layer_set_text_color(s_date_layer, GColorWhite);
-	
 	text_layer_set_font(s_date_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
 	text_layer_set_text_alignment(s_date_layer, GTextAlignmentCenter);
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_date_layer));
 	
+	s_temp_layer = text_layer_create(GRect(0, 70, 144, 50));
+	text_layer_set_background_color(s_temp_layer, GColorClear);
+	text_layer_set_text_color(s_temp_layer, GColorWhite);
+	text_layer_set_font(s_temp_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
+	text_layer_set_text_alignment(s_temp_layer, GTextAlignmentCenter);
+	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_temp_layer));
+	
 	//Initialize Weather Images
 	s_weather_clearday = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_CLEARDAY);
+	s_weather_clearnight = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_CLEARNIGHT);
 	
 	//Initialize Weather Image Display
-	s_weather_image = bitmap_layer_create(GRect(0, 55, 60, 60));
+	s_weather_image = bitmap_layer_create(GRect(0, 120, 144, 35));
 	bitmap_layer_set_bitmap(s_weather_image, s_weather_clearday);
-	//layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_weather_image));
+	layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_weather_image));
 	
 	update_time();
 }
@@ -97,6 +114,7 @@ void init(void) {
 	Tuplet initial_values[] = {
 		TupletInteger(STATUS_KEY, 0),
 		TupletInteger(TEMP_KEY, 0),
+		TupletInteger(ICON_KEY, 0),
 	};
 
 	// Begin using AppSync
