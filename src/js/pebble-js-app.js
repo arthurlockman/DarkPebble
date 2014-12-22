@@ -1,21 +1,46 @@
 var locationOptions = { "timeout": 15000, "maximumAge": 60000 }; 
 
 var emit = function() {
-	//var dict = {"status": 1, "temp": 72};
 	navigator.geolocation.getCurrentPosition(
 			locationGetSuccess, locationGetError, locationOptions);
-	//Pebble.sendAppMessage(dict);
 };
 
 Pebble.addEventListener('ready', function(e) {
 	console.log('PebbleKit JS ready!');
 
-	// Send periodic updates every 60 seconds
+	// Send periodic updates every 15 minutes
 	emit();
 	navigator.geolocation.getCurrentPosition(
 		locationGetSuccess, locationGetError, locationOptions);
 	setInterval(emit, 900000);
+	if (localStorage.getItem("apiKey") === null) {
+		localStorage.setItem("apiKey", "");
+	}
+	if (localStorage.getItem("units") === null) {
+		localStorage.setItem("units", "F");
+	}
 });
+
+//Handle configuration events
+Pebble.addEventListener('showConfiguration', function(e) {
+	// Show config page
+	Pebble.openURL('https://darkpebble.rthr.me/dp-configuration.html?apiKey=' + 
+					localStorage.getItem("apiKey") + '&units=' + localStorage.getItem("units"));
+});
+
+Pebble.addEventListener('webviewclosed',
+	function(e) {
+		var configuration = JSON.parse(decodeURIComponent(e.response));
+		console.log('Configuration window returned: ', JSON.stringify(configuration));
+		if (configuration.apiKey !== null) {
+			localStorage.setItem("apiKey", configuration.apiKey);
+		}
+		if (configuration.units !== null) {
+			localStorage.setItem("units", configuration.units);
+		}
+		emit();
+	}
+);
 
 Pebble.addEventListener('appmessage', function(e) {
   console.log('AppMessage received!' + e);
@@ -64,7 +89,7 @@ function getCurrentWeather(latitude, longitude)
 	var response;
 	var request = new XMLHttpRequest();
 	request.open('GET', "https://api.forecast.io/forecast/" + 
-		"215b3667c1daba43f700ade0d637d5a5" + "/" + latitude + "," + longitude, true);
+		localStorage.getItem("apiKey") + "/" + latitude + "," + longitude, true);
 
 	request.onload = function(e)
 	{
@@ -82,13 +107,21 @@ function getCurrentWeather(latitude, longitude)
 
 				summ = response.minutely.summary;
 			}
-			else
-			{
+			else if (request.status == 403 || request.status == 404) {
 				status = 0;
 				icon = 0;
 				temp = 0;
 				fTemp = 0;
-				summ = 0;
+				summ = "Invalid API key. Check settings.";
+			}
+			else
+			{
+				console.log(request.status);
+				status = 0;
+				icon = 0;
+				temp = 0;
+				fTemp = 0;
+				summ = "Service is down. Try later.";
 			}
 			console.log("<p>"+icon+"</p>");
 			console.log("<p>"+temp+"</p>");

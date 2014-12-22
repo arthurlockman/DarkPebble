@@ -5,7 +5,8 @@
         "temp": 1
     },
     "capabilities": [
-        "location"
+        "location",
+        "configurable"
     ],
     "companyName": "Arthur Lockman",
     "longName": "DarkPebble",
