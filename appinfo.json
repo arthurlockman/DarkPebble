@@ -1,8 +1,8 @@
 {
     "appKeys": {
-        "status": 0,
-        "temp": 1,
-        "weathericon": 2
+        "forecast": 2,
+        "icon": 0,
+        "temp": 1
     },
     "capabilities": [
         "location"
@@ -12,6 +12,12 @@
     "projectType": "native",
     "resources": {
         "media": [
+            {
+                "file": "images/rain.png",
+                "menuIcon": true,
+                "name": "IMAGE_RAIN",
+                "type": "png"
+            },
             {
                 "file": "images/wind.png",
                 "name": "IMAGE_WIND",
@@ -25,11 +31,6 @@
             {
                 "file": "images/sleet.png",
                 "name": "IMAGE_SLEET",
-                "type": "png"
-            },
-            {
-                "file": "images/rain.png",
-                "name": "IMAGE_RAIN",
                 "type": "png"
             },
             {

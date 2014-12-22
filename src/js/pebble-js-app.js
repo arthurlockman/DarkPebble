@@ -14,7 +14,7 @@ Pebble.addEventListener('ready', function(e) {
 	emit();
 	navigator.geolocation.getCurrentPosition(
 		locationGetSuccess, locationGetError, locationOptions);
-	setInterval(emit, 60000);
+	setInterval(emit, 900000);
 });
 
 Pebble.addEventListener('appmessage', function(e) {
@@ -94,51 +94,9 @@ function getCurrentWeather(latitude, longitude)
 			console.log("<p>"+temp+"</p>");
 			console.log("<p>"+fTemp+"</p>");
 			console.log("<p>"+summ+"</p>");
-			var dict = {"status": icon, "temp": fTemp};
-			Pebble.sendAppMessage(dict);
-			dict = {"weathericon": 3};
+			var dict = {"icon": icon, "temp": fTemp, "forecast": summ};
 			Pebble.sendAppMessage(dict);
 		}
 	};
 	request.send();
-}
-
-function unixTimeToReadable(time)
-{
-	var date = new Date(time * 1000);
-	var hours = date.getHours();
-	var minutes = date.getMinutes();
-	var day = "";
-	switch(date.getDay())
-	{
-		case 0:
-			day = "Sunday";
-			break;
-		case 1:
-			day = "Monday";
-			break;
-		case 2:
-			day = "Tuesday";
-			break;
-		case 3:
-			day = "Wednesday";
-			break;
-		case 4:
-			day = "Thursday";
-			break;
-		case 5:
-			day = "Friday";
-			break;
-		case 6:
-			day = "Saturday";
-			break;
-	}
-
-	var suffix = (hours >= 12)? 'pm' : 'am';
-	if (hours > 12)
-		hours = hours - 12;
-	if (hours === 0)
-		hours = 12;
-	var formattedDate = day + " @ " + hours + " " + suffix;
-	return formattedDate;
 }

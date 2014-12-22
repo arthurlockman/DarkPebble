@@ -20,12 +20,12 @@ static GBitmap *s_weather_sleet;
 
 //App sync variables
 static AppSync s_sync;
-static uint8_t s_sync_buffer[32];
+static uint8_t s_sync_buffer[64];
 
 enum {
-	STATUS_KEY = 0,	
+	ICON_KEY = 0,
 	TEMP_KEY = 1,
-	ICON_KEY = 2
+	FORECAST_KEY = 2
 };
 
 enum {
@@ -44,17 +44,16 @@ enum {
 static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, const Tuple *old_tuple, void *context) {
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "Key: %d", (int)key);
 	switch (key) {
-	case ICON_KEY:
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Counter (%d): %d", (int)key, (int)new_tuple->value->int32);
+	case FORECAST_KEY:
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Forecast: %s", new_tuple->value->cstring);
 		break;
 	case TEMP_KEY:
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Temp %d", (int)new_tuple->value->int32);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Temp: %d", (int)new_tuple->value->int32);
 		static char buffer[] = "100°";
 		snprintf (buffer, sizeof(buffer), "%d°", (int)new_tuple->value->int32);
 		text_layer_set_text(s_temp_layer, buffer);
 		break;
-	case STATUS_KEY:
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Icon: %d", (int)new_tuple->value->int32);
+	case ICON_KEY:
 		switch ((int)new_tuple->value->int32) {
 		case 1:
 			bitmap_layer_set_bitmap(s_weather_image, s_weather_clearday);
@@ -176,9 +175,9 @@ void init(void) {
 		
 	// Setup initial values
 	Tuplet initial_values[] = {
-		TupletInteger(STATUS_KEY, 0),
+		TupletInteger(ICON_KEY, 0),
 		TupletInteger(TEMP_KEY, 0),
-		TupletInteger(ICON_KEY, 1),
+		TupletCString(FORECAST_KEY, "Clear for the day."),
 	};
 
 	// Begin using AppSync
