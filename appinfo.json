@@ -1,0 +1,28 @@
+{
+    "appKeys": {
+        "status": 0,
+        "temp": 1
+    },
+    "capabilities": [
+        "location"
+    ],
+    "companyName": "Arthur Lockman",
+    "longName": "DarkPebble",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/clearday.png",
+                "name": "IMAGE_CLEARDAY",
+                "type": "png"
+            }
+        ]
+    },
+    "shortName": "DarkPebble",
+    "uuid": "0232d426-615c-42c4-8740-405f3a639167",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": true
+    }
+}
