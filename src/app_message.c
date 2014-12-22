@@ -107,13 +107,25 @@ static void update_time(){
 	strftime(buffer, sizeof("00:00"), "%H:%M", tick_time);
 	text_layer_set_text(s_time_layer, buffer);
 	
+	//static char datebuffer[] = "Jan 31, 2014";
+	//strftime(datebuffer, sizeof("Jan 31, 2014"), "%b %e, %Y", tick_time);
+	//text_layer_set_text(s_date_layer, datebuffer);
+}
+
+static void update_date() {
+	time_t temp = time(NULL);
+	struct tm *tick_time = localtime(&temp);
 	static char datebuffer[] = "Jan 31, 2014";
 	strftime(datebuffer, sizeof("Jan 31, 2014"), "%b %e, %Y", tick_time);
 	text_layer_set_text(s_date_layer, datebuffer);
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
-	update_time();
+	if ((units_changed & MINUTE_UNIT) != 0) {
+		update_time();
+	} else if ((units_changed & DAY_UNIT) != 0) {
+		update_date();
+	}
 }
 
 static void main_window_load(Window *window) {
@@ -164,6 +176,7 @@ static void main_window_load(Window *window) {
 	layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_weather_image));
 	
 	update_time();
+	update_date();
 }
 
 static void main_window_unload(Window *window) {
