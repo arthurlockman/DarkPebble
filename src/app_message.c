@@ -104,7 +104,11 @@ static void update_time(){
 	struct tm *tick_time = localtime(&temp);
 	
 	static char buffer[] = "00:00";
-	strftime(buffer, sizeof("00:00"), "%H:%M", tick_time);
+	if(clock_is_24h_style() == true) {
+		strftime(buffer, sizeof("00:00"), "%H:%M", tick_time);
+	} else {
+		strftime(buffer, sizeof("00:00"), "%I:%M", tick_time);
+	}
 	text_layer_set_text(s_time_layer, buffer);
 	
 	//static char datebuffer[] = "Jan 31, 2014";
