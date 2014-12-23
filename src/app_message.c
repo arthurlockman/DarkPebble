@@ -148,18 +148,18 @@ static void main_window_load(Window *window) {
 	text_layer_set_text_alignment(s_date_layer, GTextAlignmentCenter);
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_date_layer));
 	
-	s_temp_layer = text_layer_create(GRect(0, 70, 144, 50));
+	s_temp_layer = text_layer_create(GRect(0, 74, 83, 50));
 	text_layer_set_background_color(s_temp_layer, GColorClear);
 	text_layer_set_text_color(s_temp_layer, GColorWhite);
-	text_layer_set_font(s_temp_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
-	text_layer_set_text_alignment(s_temp_layer, GTextAlignmentCenter);
+	text_layer_set_font(s_temp_layer, fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK));
+	text_layer_set_text_alignment(s_temp_layer, GTextAlignmentRight);
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_temp_layer));
 	
-	s_forecast_layer = text_layer_create(GRect(55, 120, 78, 60));
+	s_forecast_layer = text_layer_create(GRect(10, 115, 124, 60));
 	text_layer_set_background_color(s_forecast_layer, GColorClear);
 	text_layer_set_text_color(s_forecast_layer, GColorWhite);
 	text_layer_set_font(s_forecast_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
-	text_layer_set_text_alignment(s_forecast_layer, GTextAlignmentLeft);
+	text_layer_set_text_alignment(s_forecast_layer, GTextAlignmentCenter);
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_forecast_layer));
 	
 	//Initialize Weather Images
@@ -175,7 +175,7 @@ static void main_window_load(Window *window) {
 	s_weather_sleet = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_SLEET);
 	
 	//Initialize Weather Image Display
-	s_weather_image = bitmap_layer_create(GRect(7, 120, 48, 40));
+	s_weather_image = bitmap_layer_create(GRect(83, 70, 40, 50));
 	bitmap_layer_set_bitmap(s_weather_image, s_weather_clearday);
 	layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_weather_image));
 	
