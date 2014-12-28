@@ -127,7 +127,8 @@ static void update_date() {
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 	if ((units_changed & MINUTE_UNIT) != 0) {
 		update_time();
-	} else if ((units_changed & DAY_UNIT) != 0) {
+	}
+	if ((units_changed & DAY_UNIT) != 0) {
 		update_date();
 	}
 }
