@@ -1,6 +1,13 @@
 #include <pebble.h>
 
-static Window *window;	
+#define PERSIST_TEMP_KEY 10
+#define PERSIST_FOREC_KEY 11
+#define PERSIST_ICON_KEY 12
+
+#define MyTupletCString(_key, _cstring) \
+((const Tuplet) { .type = TUPLE_CSTRING, .key = _key, .cstring = { .data = _cstring, .length = strlen(_cstring) + 1 }})
+
+static Window *window;
 static TextLayer *s_time_layer;
 static TextLayer *s_date_layer;
 static TextLayer *s_temp_layer;
@@ -48,14 +55,17 @@ static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, con
 	case FORECAST_KEY:
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "Forecast: %s", new_tuple->value->cstring);
 		text_layer_set_text(s_forecast_layer, new_tuple->value->cstring);
+		persist_write_string(PERSIST_FOREC_KEY, new_tuple->value->cstring);
 		break;
 	case TEMP_KEY:
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "Temp: %d", (int)new_tuple->value->int32);
 		static char buffer[] = "100°";
 		snprintf (buffer, sizeof(buffer), "%d°", (int)new_tuple->value->int32);
 		text_layer_set_text(s_temp_layer, buffer);
+		persist_write_int(PERSIST_TEMP_KEY, (int)new_tuple->value->int32);
 		break;
 	case ICON_KEY:
+		persist_write_int(PERSIST_ICON_KEY, (int)new_tuple->value->int32);
 		switch ((int)new_tuple->value->int32) {
 		case 1:
 			bitmap_layer_set_bitmap(s_weather_image, s_weather_clearday);
@@ -199,14 +209,74 @@ void init(void) {
 	
 	// Register AppMessage handlers
 	app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+	
+	char persist_forec[PERSIST_STRING_MAX_LENGTH];
+	int persist_temp;
+	int persist_icon;
+	if (persist_exists(PERSIST_TEMP_KEY) && persist_exists(PERSIST_ICON_KEY) && persist_exists(PERSIST_FOREC_KEY))
+	{
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Persistent keys exist.");
+		persist_icon = persist_read_int(PERSIST_ICON_KEY);
+		persist_temp = persist_read_int(PERSIST_TEMP_KEY);
 		
-	// Setup initial values
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "I: %d", persist_icon);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "T: %d", persist_temp);
+		
+		persist_read_string(PERSIST_FOREC_KEY, persist_forec, sizeof(persist_forec));
+		
+		switch (persist_icon) {
+		case 1:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_clearday);
+			break;
+		case 2:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_clearnight);
+			break;
+		case 3:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_cloudy);
+			break;
+		case 4:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_fog);
+			break;
+		case 5:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_pcloudyday);
+			break;
+		case 6:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_pcloudynight);
+			break;
+		case 7:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_rain);
+			break;
+		case 8:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_sleet);
+			break;
+		case 9:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_snow);
+			break;
+		case 10:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_wind);
+			break;
+		default:
+			bitmap_layer_set_bitmap(s_weather_image, s_weather_clearday);
+			break;
+		}
+	} else {
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Keys don't exist. Creating them.");
+		persist_write_int(PERSIST_ICON_KEY, 0);
+		persist_write_int(PERSIST_TEMP_KEY, 0);
+		persist_write_string(PERSIST_FOREC_KEY, "Clear for the day.");
+		persist_temp = 0;
+		persist_icon = 0;
+		persist_read_string(PERSIST_FOREC_KEY, persist_forec, sizeof(persist_forec));
+	}
+	
+		// Setup initial values
+	char* tmp = persist_forec;
 	Tuplet initial_values[] = {
-		TupletInteger(ICON_KEY, 0),
-		TupletInteger(TEMP_KEY, 0),
-		TupletCString(FORECAST_KEY, "Clear for the day."),
+		TupletInteger(ICON_KEY, persist_icon),
+		TupletInteger(TEMP_KEY, persist_temp),
+		TupletCString(FORECAST_KEY, tmp)
 	};
-
+	
 	// Begin using AppSync
 	app_sync_init(&s_sync, s_sync_buffer, sizeof(s_sync_buffer), initial_values, ARRAY_LENGTH(initial_values), sync_changed_handler, sync_error_handler, NULL);
 

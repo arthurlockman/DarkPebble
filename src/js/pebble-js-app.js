@@ -10,8 +10,6 @@ Pebble.addEventListener('ready', function(e) {
 
 	// Send periodic updates every 15 minutes
 	emit();
-	navigator.geolocation.getCurrentPosition(
-		locationGetSuccess, locationGetError, locationOptions);
 	setInterval(emit, 900000);
 	if (localStorage.getItem("apiKey") === null) {
 		localStorage.setItem("apiKey", "");
